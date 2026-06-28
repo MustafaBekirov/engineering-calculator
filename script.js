@@ -14,6 +14,7 @@ function getText(id) {
 }
 
 function roundUp(value, step) {
+  if (step === 0) return value;
   return Math.ceil(value / step) * step;
 }
 
@@ -104,6 +105,38 @@ function getDeltaLambdaAn(rebarClass, stressZone) {
   throw new Error('Для выбранного класса арматуры пока не задан Δλan.');
 }
 
+// Коэффициент λan для проверки l ≥ λan × d.
+function getLambdaAn(rebarClass, stressZone) {
+  if (
+    rebarClass === 'A240' ||
+    rebarClass === 'A300' ||
+    rebarClass === 'A400' ||
+    rebarClass === 'A500' ||
+    rebarClass === 'A600'
+  ) {
+    if (stressZone === 'tension') return 20;
+    if (stressZone === 'compression') return 15;
+  }
+
+  throw new Error('Для выбранного класса арматуры пока не задан λan.');
+}
+
+// Минимальная длина lmin, мм.
+function getMinimumLength(rebarClass, stressZone) {
+  if (
+    rebarClass === 'A240' ||
+    rebarClass === 'A300' ||
+    rebarClass === 'A400' ||
+    rebarClass === 'A500' ||
+    rebarClass === 'A600'
+  ) {
+    if (stressZone === 'tension') return 250;
+    if (stressZone === 'compression') return 200;
+  }
+
+  throw new Error('Для выбранного класса арматуры пока не задана минимальная длина.');
+}
+
 function getStressZoneName(stressZone) {
   if (stressZone === 'tension') return 'Растянутая зона';
   if (stressZone === 'compression') return 'Сжатая зона';
@@ -118,20 +151,36 @@ function getSeismicIncreaseName(seismicIncrease) {
   return seismicIncrease === 'yes' ? 'Да' : 'Нет';
 }
 
+function getRoundingName(roundStep) {
+  if (roundStep === 0) return 'Без округления';
+  return `Округлить вверх до ${format(roundStep)} мм`;
+}
+
 function calculateLapLength(data) {
   const Rs = getRs(data.rebarClass, data.d);
   const Rb = getRb(data.concreteClass);
   const wan = getWan(data.rebarClass, data.stressZone);
   const deltaLambdaAn = getDeltaLambdaAn(data.rebarClass, data.stressZone);
+  const lambdaAn = getLambdaAn(data.rebarClass, data.stressZone);
+  const minimumLength = getMinimumLength(data.rebarClass, data.stressZone);
 
-  // Формула:
-  // lan = (ωan × Rs / Rb + Δλan) × d
+  // Основная формула:
+  // l = (ωan × Rs / Rb + Δλan) × d
   const resistanceRatio = wan * Rs / Rb;
   const coefficient = resistanceRatio + deltaLambdaAn;
-  const lan = coefficient * data.d;
+  const formulaLength = coefficient * data.d;
 
+  // Дополнительные итоговые проверки:
+  // l ≥ λan × d
+  // l ≥ lmin
+  const lambdaLength = lambdaAn * data.d;
+  const requiredBeforeSeismic = Math.max(formulaLength, lambdaLength, minimumLength);
+
+  // ВАЖНО:
+  // Сначала учитываем сейсмические условия, если выбрано «Да».
+  // Только после этого выполняем выбранное округление.
   const seismicFactor = getSeismicIncreaseFactor(data.seismicIncrease);
-  const finalBeforeRounding = lan * seismicFactor;
+  const finalBeforeRounding = requiredBeforeSeismic * seismicFactor;
   const accepted = roundUp(finalBeforeRounding, data.roundStep);
 
   return {
@@ -140,9 +189,13 @@ function calculateLapLength(data) {
     Rb,
     wan,
     deltaLambdaAn,
+    lambdaAn,
+    minimumLength,
     resistanceRatio,
     coefficient,
-    lan,
+    formulaLength,
+    lambdaLength,
+    requiredBeforeSeismic,
     seismicFactor,
     finalBeforeRounding,
     accepted
@@ -155,7 +208,7 @@ function renderResult(result) {
 
   el.innerHTML = `
     <p class="result-main">
-      Принять l<sub>an</sub>: <strong>${format(result.accepted)} мм</strong>
+      Принять l: <strong>${format(result.accepted)} мм</strong>
     </p>
 
     <table class="table">
@@ -208,8 +261,24 @@ function renderResult(result) {
         <td>${format(result.coefficient)}</td>
       </tr>
       <tr>
-        <td>l<sub>an</sub> без сейсмического увеличения</td>
-        <td>${format(result.lan)} мм</td>
+        <td>l по основной формуле</td>
+        <td>${format(result.formulaLength)} мм</td>
+      </tr>
+      <tr>
+        <td>λ<sub>an</sub></td>
+        <td>${format(result.lambdaAn)}</td>
+      </tr>
+      <tr>
+        <td>Проверка l ≥ λ<sub>an</sub> × d</td>
+        <td>${format(result.lambdaLength)} мм</td>
+      </tr>
+      <tr>
+        <td>Проверка l ≥ l<sub>min</sub></td>
+        <td>${format(result.minimumLength)} мм</td>
+      </tr>
+      <tr>
+        <td>Требуемая длина до учета сейсмических условий</td>
+        <td>${format(result.requiredBeforeSeismic)} мм</td>
       </tr>
       <tr>
         <td>Коэффициент сейсмического увеличения</td>
@@ -220,8 +289,8 @@ function renderResult(result) {
         <td>${format(result.finalBeforeRounding)} мм</td>
       </tr>
       <tr>
-        <td>Округление вверх</td>
-        <td>до ${format(result.roundStep)} мм</td>
+        <td>Вариант округления итогового значения</td>
+        <td>${getRoundingName(result.roundStep)}</td>
       </tr>
     </table>
   `;
@@ -246,8 +315,8 @@ document.getElementById('lap-form').addEventListener('submit', (event) => {
       roundStep: getNumber('roundStep')
     };
 
-    if (data.d <= 0 || data.roundStep <= 0) {
-      throw new Error('Диаметр и шаг округления должны быть больше нуля.');
+    if (data.d <= 0 || data.roundStep < 0) {
+      throw new Error('Диаметр должен быть больше нуля. Вариант округления должен быть корректным.');
     }
 
     renderResult(calculateLapLength(data));

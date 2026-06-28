@@ -7,18 +7,58 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="page">
+  <main id="top" class="page">
     <section class="hero">
       <p class="eyebrow">Железобетонные конструкции</p>
       <h1>Инженерный калькулятор</h1>
       <p class="lead">
-        Расчёт базовой длины анкеровки / нахлёста арматуры по формуле:
-        <strong>l<sub>an</sub> = (ω<sub>an</sub> × R<sub>s</sub> / R<sub>b</sub> + Δλ<sub>an</sub>) × d</strong>
+        Онлайн-сборник инженерных расчётов. Сейчас доступен первый расчёт,
+        а дальше сюда можно будет добавлять новые модули: анкеровку, нахлёст,
+        защитный слой, сейсмические коэффициенты и другие проверки.
       </p>
     </section>
 
-    <section class="card">
-      <h2>Расчёт l<sub>an</sub></h2>
+    <section class="catalog card">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow small">Разделы</p>
+          <h2>Перечень расчётов</h2>
+        </div>
+        <span class="badge">Доступно: 1</span>
+      </div>
+
+      <div class="calc-list">
+        <a class="calc-card active" href="#lap-calculation">
+          <span class="calc-number">01</span>
+          <div>
+            <h3>Расчёт длины нахлёста арматуры</h3>
+            <p>
+              Расчёт l по классу арматуры, диаметру, классу бетона,
+              зоне работы, минимальным требованиям и учёту сейсмических условий.
+            </p>
+          </div>
+          <span class="calc-status">Открыть</span>
+        </a>
+
+        <div class="calc-card disabled">
+          <span class="calc-number">02</span>
+          <div>
+            <h3>Следующий расчёт</h3>
+            <p>Место для будущего инженерного модуля.</p>
+          </div>
+          <span class="calc-status">Скоро</span>
+        </div>
+      </div>
+    </section>
+
+<section id="lap-calculation" class="card calculator-section">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow small">Расчёт 01</p>
+          <h2>Расчёт l</h2>
+        </div>
+        <a class="back-link" href="#top">К перечню расчётов ↑</a>
+      </div>
 
       <form id="lap-form" class="form-grid">
         <label>
@@ -92,8 +132,12 @@
 
 
         <label>
-          Округлить вверх до, мм
-          <input id="roundStep" type="number" step="1" min="1" value="10" required />
+          Вариант округления итогового значения
+          <select id="roundStep" required>
+            <option value="0">Без округления</option>
+            <option value="5">Округлить вверх до 5 мм</option>
+            <option value="10" selected>Округлить вверх до 10 мм</option>
+          </select>
         </label>
 
         <button type="submit">Рассчитать</button>
@@ -111,6 +155,8 @@
         <li>ω<sub>an</sub> для A400/A500 определяется автоматически по зоне работы арматуры.</li>
         <li>R<sub>b</sub> определяется автоматически по выбранному классу бетона.</li>
         <li>Δλ<sub>an</sub> определяется автоматически по зоне работы арматуры.</li>
+        <li>Проверяется условие l ≥ λ<sub>an</sub> × d.</li>
+        <li>Проверяется минимальная длина l<sub>min</sub> в миллиметрах.</li>
         <li>При выборе сейсмических условий итоговая длина увеличивается на 30%.</li>
       </ul>
     </section>
