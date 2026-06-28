@@ -1,1 +1,121 @@
-<h1>Расчет нахлеста</h1>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Инженерный калькулятор</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="top" class="page">
+    <section class="hero">
+      <h1>Расчет длины нахлеста согласно п.451 ШНК 2.03.01-24</h1>
+    </section>
+<section id="lap-calculation" class="card calculator-section">
+      <h2>Исходные данные</h2>
+
+      <form id="lap-form" class="form-grid">
+        <label>
+          Класс арматуры
+          <select id="rebarClass" required>
+            <option value="A240">A240 (AI)</option>
+            <option value="A300">A300 (AII)</option>
+            <option value="A400" selected>A400 (AIII)</option>
+            <option value="A500">A500</option>
+            <option value="A600">A600</option>
+          </select>
+        </label>
+
+        <label>
+          Диаметр арматуры d, мм
+          <select id="d" required>
+            <option value="6">6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="14">14</option>
+            <option value="16" selected>16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="22">22</option>
+            <option value="25">25</option>
+            <option value="28">28</option>
+            <option value="32">32</option>
+            <option value="36">36</option>
+            <option value="40">40</option>
+          </select>
+        </label>
+
+        <label>
+          Зона работы арматуры
+          <select id="stressZone" required>
+            <option value="tension" selected>Растянутая зона</option>
+            <option value="compression">Сжатая зона</option>
+          </select>
+        </label>
+
+        <label>
+          Учет сейсмических условий согласно п.3.8.14 КМК 2.01.03-19
+          <select id="seismicIncrease" required>
+            <option value="no" selected>Нет</option>
+            <option value="yes">Да</option>
+          </select>
+        </label>
+
+        <label>
+          Класс бетона
+          <select id="concreteClass" required>
+            <option value="B3.5">B3.5</option>
+            <option value="B5">B5</option>
+            <option value="B7.5">B7.5</option>
+            <option value="B10">B10</option>
+            <option value="B12.5">B12.5</option>
+            <option value="B15">B15</option>
+            <option value="B20" selected>B20</option>
+            <option value="B25">B25</option>
+            <option value="B30">B30</option>
+            <option value="B35">B35</option>
+            <option value="B40">B40</option>
+            <option value="B45">B45</option>
+            <option value="B50">B50</option>
+            <option value="B55">B55</option>
+            <option value="B60">B60</option>
+          </select>
+        </label>
+
+
+
+        <label>
+          Вариант округления итогового значения
+          <select id="roundStep" required>
+            <option value="0">Без округления</option>
+            <option value="5">Округлить вверх до 5 мм</option>
+            <option value="10" selected>Округлить вверх до 10 мм</option>
+          </select>
+        </label>
+
+        <button type="submit">Рассчитать</button>
+      </form>
+
+      <div id="result" class="result-box muted">
+        Заполните данные и нажмите «Рассчитать».
+      </div>
+    </section>
+
+    <section class="note">
+      <h3>Что уже автоматизировано</h3>
+      <ul>
+        <li>R<sub>s</sub> определяется автоматически по классу и диаметру арматуры.</li>
+        <li>ω<sub>an</sub> для A400/A500 определяется автоматически по зоне работы арматуры.</li>
+        <li>R<sub>b</sub> определяется автоматически по выбранному классу бетона.</li>
+        <li>Δλ<sub>an</sub> определяется автоматически по зоне работы арматуры.</li>
+        <li>Проверяется условие l ≥ λ<sub>an</sub> × d.</li>
+        <li>Проверяется минимальная длина l<sub>min</sub> в миллиметрах.</li>
+        <li>При выборе сейсмических условий итоговая длина увеличивается на 30%.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
