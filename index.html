@@ -11,54 +11,59 @@
     <div class="container">
       <p class="eyebrow">Технические расчёты</p>
       <h1>Инженерный калькулятор</h1>
-      <p class="lead">Первый модуль: пример расчёта длины нахлёста арматуры. Формулу можно заменить под вашу методику и нормы.</p>
+      <p class="lead">Первый модуль: расчёт длины нахлёста арматуры по формуле l<sub>an</sub> = (ω<sub>an</sub> × R<sub>s</sub> / R<sub>b</sub> + Δλ<sub>an</sub>) × d.</p>
     </div>
   </header>
 
   <main class="container layout">
     <section class="card">
       <h2>Расчёт длины нахлёста</h2>
-      <p class="muted">Введите исходные данные. Все длины — в мм, сопротивления — в МПа.</p>
+      <p class="muted">Выберите класс и диаметр арматуры. Значение R<sub>s</sub> программа определит автоматически. Все длины — в мм, сопротивления — в МПа.</p>
 
       <form id="lap-form" class="form-grid">
         <label>
+          Класс арматуры
+          <select id="rebarClass" required>
+            <option value="A240">A240 (AI)</option>
+            <option value="A300">A300 (AII)</option>
+            <option value="A400" selected>A400 (AIII)</option>
+            <option value="A500">A500</option>
+          </select>
+        </label>
+
+        <label>
           Диаметр арматуры d, мм
-          <input id="d" type="number" step="0.1" min="1" value="16" required />
+          <select id="d" required>
+            <option value="6">6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="14">14</option>
+            <option value="16" selected>16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="22">22</option>
+            <option value="25">25</option>
+            <option value="28">28</option>
+            <option value="32">32</option>
+            <option value="36">36</option>
+            <option value="40">40</option>
+          </select>
         </label>
 
         <label>
-          Коэффициент E
-          <input id="E" type="number" step="0.1" value="40" required />
-        </label>
-
-        <label>
-          Коэффициент w
-          <input id="w" type="number" step="0.01" value="1.0" required />
-        </label>
-
-        <label>
-          Rs, МПа
-          <input id="Rs" type="number" step="0.1" value="365" required />
+          ωan
+          <input id="wan" type="number" step="0.01" value="1.0" required />
         </label>
 
         <label>
           Rb, МПа
-          <input id="Rb" type="number" step="0.1" min="0.1" value="14.5" required />
+          <input id="Rb" type="number" step="0.01" min="0.01" value="14.5" required />
         </label>
 
         <label>
-          Коэффициент P
-          <input id="P" type="number" step="0.01" value="0" required />
-        </label>
-
-        <label>
-          Коэффициент S
-          <input id="S" type="number" step="0.01" value="1.0" required />
-        </label>
-
-        <label>
-          Минимум Lan, мм
-          <input id="Lan" type="number" step="1" value="300" required />
+          Δλan
+          <input id="deltaLambdaAn" type="number" step="0.01" value="0" required />
         </label>
 
         <label>
@@ -79,8 +84,8 @@
 
     <section class="card notes">
       <h2>Принятая формула в этой версии</h2>
-      <code>L = max(E × d; (w × Rs / Rb + P) × d × S; Lan)</code>
-      <p class="muted">Это стартовый шаблон. Перед применением в работе формулу и коэффициенты нужно сверить с вашей нормативной методикой.</p>
+      <code>lan = (ωan × Rs / Rb + Δλan) × d</code>
+      <p class="muted">В этой версии R<sub>s</sub> определяется автоматически по классу и диаметру арматуры. Значения R<sub>b</sub>, ω<sub>an</sub> и Δλ<sub>an</sub> пока вводятся вручную. Когда будут таблицы коэффициентов, их можно заменить на выпадающие списки.</p>
     </section>
   </main>
 
