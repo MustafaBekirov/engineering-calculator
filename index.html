@@ -1,24 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Инженерный калькулятор</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="container">
-      <p class="eyebrow">Технические расчёты</p>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Железобетонные конструкции</p>
       <h1>Инженерный калькулятор</h1>
-      <p class="lead">Первый модуль: расчёт длины нахлёста арматуры по формуле l<sub>an</sub> = (ω<sub>an</sub> × R<sub>s</sub> / R<sub>b</sub> + Δλ<sub>an</sub>) × d.</p>
-    </div>
-  </header>
+      <p class="lead">
+        Расчёт базовой длины анкеровки / нахлёста арматуры по формуле:
+        <strong>l<sub>an</sub> = (ω<sub>an</sub> × R<sub>s</sub> / R<sub>b</sub> + Δλ<sub>an</sub>) × d</strong>
+      </p>
+    </section>
 
-  <main class="container layout">
     <section class="card">
-      <h2>Расчёт длины нахлёста</h2>
-      <p class="muted">Выберите класс и диаметр арматуры. Значение R<sub>s</sub> программа определит автоматически. Все длины — в мм, сопротивления — в МПа.</p>
+      <h2>Расчёт l<sub>an</sub></h2>
 
       <form id="lap-form" class="form-grid">
         <label>
@@ -28,6 +28,7 @@
             <option value="A300">A300 (AII)</option>
             <option value="A400" selected>A400 (AIII)</option>
             <option value="A500">A500</option>
+            <option value="A600">A600</option>
           </select>
         </label>
 
@@ -52,46 +53,59 @@
         </label>
 
         <label>
-          ωan
-          <input id="wan" type="number" step="0.01" value="1.0" required />
+          Зона работы арматуры
+          <select id="stressZone" required>
+            <option value="tension" selected>Растянутая зона</option>
+            <option value="compression">Сжатая зона</option>
+          </select>
         </label>
 
         <label>
-          Rb, МПа
-          <input id="Rb" type="number" step="0.01" min="0.01" value="14.5" required />
+          Класс бетона
+          <select id="concreteClass" required>
+            <option value="B3.5">B3.5</option>
+            <option value="B5">B5</option>
+            <option value="B7.5">B7.5</option>
+            <option value="B10">B10</option>
+            <option value="B12.5">B12.5</option>
+            <option value="B15">B15</option>
+            <option value="B20" selected>B20</option>
+            <option value="B25">B25</option>
+            <option value="B30">B30</option>
+            <option value="B35">B35</option>
+            <option value="B40">B40</option>
+            <option value="B45">B45</option>
+            <option value="B50">B50</option>
+            <option value="B55">B55</option>
+            <option value="B60">B60</option>
+          </select>
         </label>
 
-        <label>
-          Δλan
-          <input id="deltaLambdaAn" type="number" step="0.01" value="0" required />
-        </label>
+
 
         <label>
-          Округлять вверх до, мм
+          Округлить вверх до, мм
           <input id="roundStep" type="number" step="1" min="1" value="10" required />
         </label>
 
         <button type="submit">Рассчитать</button>
       </form>
-    </section>
 
-    <section class="card result-card" aria-live="polite">
-      <h2>Результат</h2>
-      <div id="result" class="empty">
-        Заполните поля и нажмите «Рассчитать».
+      <div id="result" class="result-box muted">
+        Заполните данные и нажмите «Рассчитать».
       </div>
     </section>
 
-    <section class="card notes">
-      <h2>Принятая формула в этой версии</h2>
-      <code>lan = (ωan × Rs / Rb + Δλan) × d</code>
-      <p class="muted">В этой версии R<sub>s</sub> определяется автоматически по классу и диаметру арматуры. Значения R<sub>b</sub>, ω<sub>an</sub> и Δλ<sub>an</sub> пока вводятся вручную. Когда будут таблицы коэффициентов, их можно заменить на выпадающие списки.</p>
+    <section class="note">
+      <h3>Что уже автоматизировано</h3>
+      <ul>
+        <li>R<sub>s</sub> определяется автоматически по классу и диаметру арматуры.</li>
+        <li>ω<sub>an</sub> для A400/A500 определяется автоматически по зоне работы арматуры.</li>
+        <li>R<sub>b</sub> определяется автоматически по выбранному классу бетона.</li>
+        <li>Δλ<sub>an</sub> определяется автоматически по зоне работы арматуры.</li>
+      </ul>
     </section>
   </main>
-
-  <footer class="footer">
-    <div class="container">© Инженерный калькулятор. Черновая версия.</div>
-  </footer>
 
   <script src="script.js"></script>
 </body>
