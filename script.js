@@ -110,6 +110,14 @@ function getStressZoneName(stressZone) {
   return stressZone;
 }
 
+function getSeismicIncreaseFactor(seismicIncrease) {
+  return seismicIncrease === 'yes' ? 1.3 : 1.0;
+}
+
+function getSeismicIncreaseName(seismicIncrease) {
+  return seismicIncrease === 'yes' ? 'Да' : 'Нет';
+}
+
 function calculateLapLength(data) {
   const Rs = getRs(data.rebarClass, data.d);
   const Rb = getRb(data.concreteClass);
@@ -121,7 +129,10 @@ function calculateLapLength(data) {
   const resistanceRatio = wan * Rs / Rb;
   const coefficient = resistanceRatio + deltaLambdaAn;
   const lan = coefficient * data.d;
-  const accepted = roundUp(lan, data.roundStep);
+
+  const seismicFactor = getSeismicIncreaseFactor(data.seismicIncrease);
+  const finalBeforeRounding = lan * seismicFactor;
+  const accepted = roundUp(finalBeforeRounding, data.roundStep);
 
   return {
     ...data,
@@ -132,6 +143,8 @@ function calculateLapLength(data) {
     resistanceRatio,
     coefficient,
     lan,
+    seismicFactor,
+    finalBeforeRounding,
     accepted
   };
 }
@@ -163,6 +176,10 @@ function renderResult(result) {
         <td>${getStressZoneName(result.stressZone)}</td>
       </tr>
       <tr>
+        <td>Учет сейсмических условий согласно п.3.8.14 КМК 2.01.03-19</td>
+        <td>${getSeismicIncreaseName(result.seismicIncrease)}</td>
+      </tr>
+      <tr>
         <td>R<sub>s</sub></td>
         <td>${format(result.Rs)} МПа</td>
       </tr>
@@ -191,8 +208,16 @@ function renderResult(result) {
         <td>${format(result.coefficient)}</td>
       </tr>
       <tr>
-        <td>l<sub>an</sub> до округления</td>
+        <td>l<sub>an</sub> без сейсмического увеличения</td>
         <td>${format(result.lan)} мм</td>
+      </tr>
+      <tr>
+        <td>Коэффициент сейсмического увеличения</td>
+        <td>${format(result.seismicFactor)}</td>
+      </tr>
+      <tr>
+        <td>Итоговая длина до округления</td>
+        <td>${format(result.finalBeforeRounding)} мм</td>
       </tr>
       <tr>
         <td>Округление вверх</td>
@@ -216,6 +241,7 @@ document.getElementById('lap-form').addEventListener('submit', (event) => {
       rebarClass: getText('rebarClass'),
       d: getNumber('d'),
       stressZone: getText('stressZone'),
+      seismicIncrease: getText('seismicIncrease'),
       concreteClass: getText('concreteClass'),
       roundStep: getNumber('roundStep')
     };

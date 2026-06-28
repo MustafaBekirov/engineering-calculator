@@ -61,6 +61,14 @@
         </label>
 
         <label>
+          Учет сейсмических условий согласно п.3.8.14 КМК 2.01.03-19
+          <select id="seismicIncrease" required>
+            <option value="no" selected>Нет</option>
+            <option value="yes">Да</option>
+          </select>
+        </label>
+
+        <label>
           Класс бетона
           <select id="concreteClass" required>
             <option value="B3.5">B3.5</option>
@@ -103,6 +111,7 @@
         <li>ω<sub>an</sub> для A400/A500 определяется автоматически по зоне работы арматуры.</li>
         <li>R<sub>b</sub> определяется автоматически по выбранному классу бетона.</li>
         <li>Δλ<sub>an</sub> определяется автоматически по зоне работы арматуры.</li>
+        <li>При выборе сейсмических условий итоговая длина увеличивается на 30%.</li>
       </ul>
     </section>
   </main>
