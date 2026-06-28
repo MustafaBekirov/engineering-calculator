@@ -179,3 +179,10 @@ button:hover {
     padding: 18px;
   }
 }
+
+
+.version {
+  margin-top: -8px;
+  color: var(--muted);
+  font-size: 14px;
+}
